@@ -305,6 +305,17 @@ class PipelineExecutorFactoryModule(object):
 
             # Get the graph, lib, and parameters from GraphExecutorFactoryModule.
             lib = self.pipeline_mods[lib_index]["lib"]
+
+
+            print("Runtime module structure:")
+            print("\t %s" % str(lib.get_lib()))
+            for sub_mod in lib.get_lib().imported_modules:
+                print("\t  |- %s" % str(sub_mod))
+            
+            if self.pipeline_mods[lib_index]["dev"].device_type == 2: #gpu device
+                lib.lib.imported_modules[0].save('codegen/codegen_submodule{}.cu'.format(lib_index))
+            elif self.pipeline_mods[lib_index]["dev"].device_type == 4: #opencl device
+                lib.lib.imported_modules[0].save('codegen/codegen_submodule{}.cl'.format(lib_index))
             # Export the lib, graph, and parameters to disk.
             lib.export_library(mconfig["lib_name"])
             with open(mconfig["json_name"], "w") as file_handle:

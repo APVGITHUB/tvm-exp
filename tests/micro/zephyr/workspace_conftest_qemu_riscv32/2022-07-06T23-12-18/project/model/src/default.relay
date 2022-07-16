@@ -1,0 +1,3 @@
+def @main(%a: Tensor[(1, 2), uint8] /* ty=Tensor[(1, 2), uint8] span=from_string:4:16 */, %b: Tensor[(1, 2), uint8] /* ty=Tensor[(1, 2), uint8] span=from_string:4:21 */) -> Tensor[(1, 2), uint8] {
+  add(%a, %b) /* ty=Tensor[(1, 2), uint8] span=from_string:4:11 */
+}

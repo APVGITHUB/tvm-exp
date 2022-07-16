@@ -27,6 +27,7 @@ from .. import expr as _expr
 from .. import function as _function
 from .. import op as _op
 from ... import nd as _nd
+from ..expr import var
 from .common import ExprTable, new_var
 
 __all__ = ["from_keras"]
@@ -1171,6 +1172,18 @@ def _convert_l2_normalize(inexpr, keras_layer, data_layout):
         axis = [fix_axis_for_nchw(x) for x in axis]
     return _op.nn.l2_normalize(inexpr, eps=1e-12, axis=axis)
 
+def _convert_scatter_nd(inexpr,keras_layer,data_layout):
+
+    # data = relay.var("data", shape=data_np.shape, dtype=str(data_np.dtype))
+    indices = _expr.var("indices", shape=keras_layer.input_shape[0], dtype="int32")
+    updates = _expr.var("updates", shape=keras_layer.input_shape[1], dtype="float32")
+    # inp[0], inp[1], (batch_size,) + image_size + (nb_channels,)
+    print(keras_layer.input_shape[:])
+    print(indices)
+    print(inexpr)
+    print(_op.scatter_nd(inexpr,indices,updates))
+    # return _op.scatter_nd(inexpr,indices,updates)
+
 
 def _convert_lambda(inexpr, keras_layer, _, data_layout):
     fcode = keras_layer.function.__code__
@@ -1181,6 +1194,12 @@ def _convert_lambda(inexpr, keras_layer, _, data_layout):
         and fcode.co_names[-1] == "l2_normalize"
     ):
         return _convert_l2_normalize(inexpr, keras_layer, data_layout)
+    elif (
+        fcode.co_name == "<lambda>"
+        and len(fcode.co_names) > 0
+        and fcode.co_names[-1] == "scatter_nd"
+    ):
+        return _convert_scatter_nd(inexpr,keras_layer,data_layout)
     raise tvm.error.OpNotImplemented(
         "Function {} used in Lambda layer is not supported in frontend Keras.".format(
             fcode.co_names

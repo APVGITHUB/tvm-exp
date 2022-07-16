@@ -56,6 +56,14 @@
         "vid_hex": "0483",
         "pid_hex": "374b"
     },
+    "nucleo_f401re": {
+        "board": "nucleo_f401re",
+        "model": "stm32f401ret6u",
+        "is_qemu": false,
+        "fpu": true,
+        "vid_hex": "0483",
+        "pid_hex": "374b"
+    },
     "qemu_cortex_r5": {
         "board": "qemu_cortex_r5",
         "model": "zynq_mp_r5",

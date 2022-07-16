@@ -58,7 +58,7 @@ runtime::Module BuildAOCL(IRModule mod, Target target, bool emulation) {
   runtime::SaveBinaryToFile("aocl.cl", code.c_str());
 
   // Compile the .cl file.
-  std::string cmd = "aoc aocl.cl";
+  std::string cmd = "aoc aocl.cl -v --report --profile";
   // AOCL supports fp64.
   cmd += " -Dcl_khr_fp64";
   Optional<String> device = target->GetAttr<String>("device");
